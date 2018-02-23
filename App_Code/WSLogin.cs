@@ -35,8 +35,27 @@ public class WSLogin : System.Web.Services.WebService
             User _user = new global::User()
             {
                 Id = 1001,
-                Name = "Ramón Gerardo",
-                LastName = "Atilano",
+                Name = "Luis Zanellita",
+                LastName = "Contrerias",
+            };
+            //Crear sesion con el id del usuario
+            HttpContext.Current.Session["Identificador"] = _user.Id;
+            return _user;
+        }
+        else
+            throw new Exception("User not found!!! = (");
+
+    }
+    [WebMethod(EnableSession = true)]
+    public User Registrar(User user)
+    {
+        // Aqui iria la logica de base de datos//
+        
+        if (user.Name != String.Empty  && user.Nick != String.Empty && user.Password != String.Empty && user.LastName != String.Empty)
+        {
+            User _user = new global::User()
+            {
+                Id = 1001
             };
             //Crear sesion con el id del usuario
             HttpContext.Current.Session["Identificador"] = _user.Id;
