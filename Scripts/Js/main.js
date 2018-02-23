@@ -7,9 +7,9 @@
         var password = $('#txtPassword').val();
         var modulo = "Login";
         var send = "Bienvenido.aspx";
-        var alert = "No existe usuario";
+        var alerta = "No existe usuario";
         if (nick != '' && password != '') {
-            MiFuncionLogin(null,nick, password,null, modulo,send,alert);
+            MiFuncionLogin(null,nick, password,null, modulo,send,alerta);
         }
         else {
             alert('Proporcione Nick y Password')
@@ -22,23 +22,25 @@
         var password = $('#txtPasswordResgitrar').val();
         var modulo = "Registrar";
         var send = "Bienvenido.aspx"
-        var alert = "LLene todos los campos";
+        var alerta = "LLene todos los campos";
         if (nick != '' && password != '' && lastname != '' && name != '') {
-            MiFuncionLogin(name, nick, password, lastname, modulo, send, alert);
+            MiFuncionLogin(name, nick, password, lastname, modulo, send, alerta);
         }
         else {
             alert('Proporcione Todos los datos')
         }
         });
-        $('#btnRegistrar').click(function () {
+    $('#btnRegistrar').click(function () {
+            var modulo = "Registrar";
             var send = "Registro.html";
-            var alert = "Error 404";
-                MiFuncionLogin(null, null, null, null, null, send, alert);
+            var alerta = "Error 404";
+                MiFuncionLogin(null, null, null, null, null, send, alerta);
         });
-        $('#btnInicio').click(function () {
+    $('#btnInicio').click(function () {
+            var modulo = "Registrar";
             var send = "Login.html";
-            var alert = "Error 404";
-            MiFuncionLogin(null, null, null, null, null, send, alert);
+            var alerta = "Error 404";
+            MiFuncionLogin(null, null, null, null, null, send, alerta);
         });
 });
 function funcionWebService() {
@@ -57,7 +59,7 @@ function funcionWebService() {
 
     });
 };
-function MiFuncionLogin(name,nick, password,lastname,modulo,send,alert) {
+function MiFuncionLogin(name,nick, password,lastname,modulo,send,alerta) {
     var objJson = {
         "Name": name,
         "Nick": nick,
@@ -77,7 +79,7 @@ function MiFuncionLogin(name,nick, password,lastname,modulo,send,alert) {
                 window.location.href = send
             }
             else {
-                alert(alert);
+                alert(alerta);
                 //alert(msg.d.Name)
             }
         },
