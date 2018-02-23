@@ -31,16 +31,16 @@
         }
         });
     $('#btnRegistrar').click(function () {
-            var modulo = "Registrar";
-            var send = "Registro.html";
+            var modulo = "Vacio";
+            var send = "Registrar.html";
             var alerta = "Error 404";
-                MiFuncionLogin(null, null, null, null, null, send, alerta);
+            CargarModulo(modulo, send, alerta);
         });
     $('#btnInicio').click(function () {
-            var modulo = "Registrar";
+            var modulo = "Vacio";
             var send = "Login.html";
             var alerta = "Error 404";
-            MiFuncionLogin(null, null, null, null, null, send, alerta);
+            CargarModulo(modulo, send, alerta);
         });
 });
 function funcionWebService() {
@@ -59,7 +59,7 @@ function funcionWebService() {
 
     });
 };
-function MiFuncionLogin(name,nick, password,lastname,modulo,send,alerta) {
+function MiFuncionLogin(name, nick, password, lastname, modulo, send, alerta) {
     var objJson = {
         "Name": name,
         "Nick": nick,
@@ -89,3 +89,26 @@ function MiFuncionLogin(name,nick, password,lastname,modulo,send,alerta) {
 
     });
 }
+    function CargarModulo(modulo, send, alerta) {
+        $.ajax({
+
+            url: "WSLogin.asmx/" + modulo,
+            data: "",
+            dataType: "json",
+            type: "POST",
+            contentType: "application/json; utf-8",
+            success: function (msg) {
+                if (msg.d == true) {
+                    window.location.href = send
+                }
+                else {
+                    alert(alerta);
+                    //alert(msg.d.Name)
+                }
+            },
+            error: function (result) {
+                alert("ERROR " + result.status + ' ' + result.statusText);
+            }
+
+        });
+    }

@@ -36,7 +36,7 @@ public class WSLogin : System.Web.Services.WebService
             {
                 Id = 1001,
                 Name = "Luis Zanellita",
-                LastName = "Contrerias",
+                LastName = "Contreritas",
             };
             //Crear sesion con el id del usuario
             HttpContext.Current.Session["Identificador"] = _user.Id;
@@ -64,5 +64,12 @@ public class WSLogin : System.Web.Services.WebService
         else
             throw new Exception("User not found!!! = (");
 
+    }
+    [WebMethod(EnableSession = true)]
+    public bool Vacio()
+    {
+        bool resultado = true;
+        // Aqui iria la logica de base de datos//
+        return resultado;
     }
 }
