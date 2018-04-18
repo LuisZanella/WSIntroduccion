@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Services;
-
 /// <summary>
 /// Descripción breve de WSLogin
 /// </summary>
@@ -29,6 +30,37 @@ public class WSLogin : System.Web.Services.WebService
     [WebMethod(EnableSession = true)]
     public User Login(User user)
     {
+        SqlConexion _conexion = new SqlConexion();
+        List<SqlParameter> _Parametros = new List<SqlParameter>();
+        DataTableReader _dtr = null;
+        try
+        {
+            //Abrir conexion
+            _conexion.Conectar(System.Configuration.ConfigurationManager.ConnectionStrings["MiBD"].ToString());
+            // Se agregan parámetros a la lista List <SqlParameter>, con los valores para cada parametro que se obtienen de los atributos
+            // del objeto Pej.Objeto . Atributo_x
+            _Parametros.Add(new SqlParameter("@Nick", user.Nick));
+            _Parametros.Add(new SqlParameter("@Password", user.Password));
+            _conexion.PrepararProcedimiento("dbo.sp_LoginUser", _Parametros);
+
+        }
+        catch (Exception ex)
+        {
+
+            throw new Exception(ex.Message);
+        }
+        finally {
+            _conexion.Desconectar();
+            _conexion = null;
+            _dtr = null;
+        }
+
+
+
+
+
+
+
         // Aqui iria la logica de base de datos//
         if (user.Nick == "luis" && user.Password == "123")
         {
@@ -44,13 +76,28 @@ public class WSLogin : System.Web.Services.WebService
         }
         else
             throw new Exception("User not found!!! = (");
-
+    }
+    [WebMethod(EnableSession = true)]
+    public User Registro(User user)
+    {
+        // Aqui iria la logica de base de datos//
+        User _user = new global::User()
+        {
+            Id = 1,
+            Nick = user.Nick,
+            LastName = user.LastName,
+            Name = user.Name,
+            Password = user.Password,
+        };
+        //Crear sesion con el id del usuario
+        HttpContext.Current.Session["Identificador"] = _user.Id;
+        return _user;
     }
     [WebMethod(EnableSession = true)]
     public User Registrar(User user)
     {
         // Aqui iria la logica de base de datos//
-        
+
         if (user.Name != String.Empty  && user.Nick != String.Empty && user.Password != String.Empty && user.LastName != String.Empty)
         {
             User _user = new global::User()

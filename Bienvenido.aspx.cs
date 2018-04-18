@@ -27,7 +27,5 @@ public partial class Bienvenido : System.Web.UI.Page
     {
         HttpContext.Current.Session["Identificador"] = 0;
         Response.Redirect("Login.html");
-
-
     }
 }
