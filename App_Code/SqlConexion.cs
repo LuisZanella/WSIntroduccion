@@ -68,21 +68,52 @@ public class SqlConexion
             throw new Exception("No hay conexion con la bd");
         }
     }
-    public DataTableReader EjecutarTableReader() {
+    public DataTable EjecutarTableReader() {
+        
+            DataTable dt = new DataTable();
+            SqlDataAdapter adt = new SqlDataAdapter();
+            SqlCommand cmd = new SqlCommand(_NombreProcedimiento, _conn);
+        try
+        {
+            if (_Preparado)
+            {
+                //cmm.CommandTimeout = 120; // Segundos de espera para ejecutar una Consulta en SQL(60 segundos)
+                cmd.Parameters.AddRange(_Parametros.ToArray());
+                cmd.CommandType = CommandType.StoredProcedure;
+                /*adt.SelectCommand = cmd;
+                adt.Fill(dt);*/
+                dt.Load(cmd.ExecuteReader());
+                _Preparado = false;
+
+                return dt;
+            }
+            else
+            {
+                _Preparado = false;
+                throw new Exception("Procedimiento no preparado");
+            }
+        }
+        catch (Exception x)
+        {
+            string MensajeError = "Error: " + x.Message + ".";
+            throw new Exception(MensajeError, x);
+        }
+        finally {
+            cmd.Dispose();
+        }
+    }
+    public int EjecutarProcedimiento() {
         if (_Preparado)
         {
-            DataTable dt = new DataTable();
             SqlCommand cmm = new SqlCommand(_NombreProcedimiento, _conn);
             cmm.CommandType = System.Data.CommandType.StoredProcedure;
-            //cmm.CommandTimeout = 120; // Segundos de espera para ejecutar una Consulta en SQL(60 segundos)
+            cmm.CommandTimeout = 120; // Segundos de espera para ejecutar una consulta en SQL (60 Segundos)
             cmm.Parameters.AddRange(_Parametros.ToArray());
-            SqlDataAdapter adt = new SqlDataAdapter(cmm);
-            adt.Fill(dt);
             _Preparado = false;
-            return dt.CreateDataReader();
+            return cmm.ExecuteNonQuery();
         }
-        else
-        {
+        else {
+
             _Preparado = false;
             throw new Exception("Procedimiento no preparado");
         }

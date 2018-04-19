@@ -31,7 +31,7 @@
         var alerta = "LLene todos los campos";
         if (nick != '' && password != '' && lastname != '' && name != '') {
             if (checkPassword(password)) {
-                MiFuncionLogin(name, nick, password, lastname, modulo, send, alerta);
+                MiFuncionRegistro(name, nick, password, lastname, modulo, send, alerta);
                 
             }
             else alert('Por favor introduzca una contraseña dificil');
@@ -113,6 +113,38 @@ function funcionWebService() {
 
         });
     }
+function MiFuncionRegistro(name, nick, password, lastname, modulo, send, alerta) {
+    var objJson = {
+        "Name": name,
+        "Nick": nick,
+        "Password": password,
+        //"Password": password,
+        "LastName": lastname
+    };
+
+
+    var stringJson = JSON.stringify(objJson);
+    $.ajax({
+
+        url: "WSLogin.asmx/" + modulo,
+        data: "{'user':" + stringJson + "}",
+        dataType: "json",
+        type: "POST",
+        contentType: "application/json; utf-8",
+        success: function (msg) {
+            if (name != null && nick != null && password != null && lastname != null) {
+                $.cookie('registroFull', stringJson);
+            };
+            alert("Registrado");
+                window.location.href = send
+                //alert(msg.d.Name)
+        },
+        error: function (result) {
+            alert("ERROR " + result.status + ' ' + result.statusText);
+        }
+
+    });
+}
     function CargarModulo(modulo, send, alerta)
     {
         $.ajax({
@@ -123,13 +155,7 @@ function funcionWebService() {
             type: "POST",
             contentType: "application/json; utf-8",
             success: function (msg) {
-                if (msg.d == true) {
-                    window.location.href = send
-                }
-                else {
-                    alert(alerta);
-                    //alert(msg.d.Name)
-                }
+                window.location.href = send
             },
             error: function (result) {
                 alert("ERROR " + result.status + ' ' + result.statusText);

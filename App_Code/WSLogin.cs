@@ -32,7 +32,7 @@ public class WSLogin : System.Web.Services.WebService
     {
         SqlConexion _conexion = new SqlConexion();
         List<SqlParameter> _Parametros = new List<SqlParameter>();
-        DataTableReader _dtr = null;
+        DataTable _dtr = null;
         try
         {
             //Abrir conexion
@@ -41,7 +41,21 @@ public class WSLogin : System.Web.Services.WebService
             // del objeto Pej.Objeto . Atributo_x
             _Parametros.Add(new SqlParameter("@Nick", user.Nick));
             _Parametros.Add(new SqlParameter("@Password", user.Password));
-            _conexion.PrepararProcedimiento("dbo.sp_LoginUser", _Parametros);
+            _conexion.PrepararProcedimiento("sp_LoginUser", _Parametros);
+            _dtr = _conexion.EjecutarTableReader();
+            if (_dtr.HasRows)
+            {
+                User _user = new global::User()
+                {
+                    Id = long.Parse(_dtr["Id_User"].ToString()),
+                    Name = _dtr["Name"].ToString(),
+                    LastName = _dtr["LastName"].ToString(),
+                };
+                HttpContext.Current.Session["Identificador"] = _user.Id;
+                return _user;
+            }
+            else
+                throw new Exception("User not found");
 
         }
         catch (Exception ex)
@@ -55,62 +69,67 @@ public class WSLogin : System.Web.Services.WebService
             _dtr = null;
         }
 
-
-
-
-
-
-
-        // Aqui iria la logica de base de datos//
-        if (user.Nick == "luis" && user.Password == "123")
-        {
-            User _user = new global::User()
-            {
-                Id = 1001,
-                Name = "Luis Zanellita",
-                LastName = "Contreritas",
-            };
-            //Crear sesion con el id del usuario
-            HttpContext.Current.Session["Identificador"] = _user.Id;
-            return _user;
-        }
-        else
-            throw new Exception("User not found!!! = (");
+    //    // Aqui iria la logica de base de datos//
+    //    if (user.Nick == "luis" && user.Password == "123")
+    //    {
+    //        User _user = new global::User()
+    //        {
+    //            Id = 1001,
+    //            Name = "Luis Zanellita",
+    //            LastName = "Contreritas",
+    //        };
+    //        //Crear sesion con el id del usuario
+    //        HttpContext.Current.Session["Identificador"] = _user.Id;
+    //        return _user;
+    //    }
+    //    else
+    //        throw new Exception("User not found!!! = (");
+    //}
+    //[WebMethod(EnableSession = true)]
+    //public User Registro(User user)
+    //{
+    //    // Aqui iria la logica de base de datos//
+    //    User _user = new global::User()
+    //    {
+    //        Id = 1,
+    //        Nick = user.Nick,
+    //        LastName = user.LastName,
+    //        Name = user.Name,
+    //        Password = user.Password,
+    //    };
+    //    //Crear sesion con el id del usuario
+    //    HttpContext.Current.Session["Identificador"] = _user.Id;
+    //    return _user;
     }
     [WebMethod(EnableSession = true)]
     public User Registro(User user)
     {
-        // Aqui iria la logica de base de datos//
-        User _user = new global::User()
+        SqlConexion _conexion = new SqlConexion();
+        List<SqlParameter> _Parametros = new List<SqlParameter>();
+        try 
         {
-            Id = 1,
-            Nick = user.Nick,
-            LastName = user.LastName,
-            Name = user.Name,
-            Password = user.Password,
-        };
-        //Crear sesion con el id del usuario
-        HttpContext.Current.Session["Identificador"] = _user.Id;
-        return _user;
-    }
-    [WebMethod(EnableSession = true)]
-    public User Registrar(User user)
-    {
-        // Aqui iria la logica de base de datos//
-
-        if (user.Name != String.Empty  && user.Nick != String.Empty && user.Password != String.Empty && user.LastName != String.Empty)
-        {
-            User _user = new global::User()
-            {
-                Id = 1001
-            };
-            //Crear sesion con el id del usuario
-            HttpContext.Current.Session["Identificador"] = _user.Id;
-            return _user;
+            //Abrir conexion
+            _conexion.Conectar(System.Configuration.ConfigurationManager.ConnectionStrings["MiBD"].ToString());
+            // Se agregan parámetros a la lista List <SqlParameter>, con los valores para cada parametro que se obtienen de los atributos
+            // del objeto Pej.Objeto . Atributo_x
+            _Parametros.Add(new SqlParameter("@Name", user.Name));
+            _Parametros.Add(new SqlParameter("@Password", user.Password));
+            _Parametros.Add(new SqlParameter("@LastName", user.LastName));
+            _Parametros.Add(new SqlParameter("@Nick", user.Nick));
+            _conexion.PrepararProcedimiento("sp_SetUser", _Parametros);
+            _conexion.EjecutarProcedimiento();
+            return user;
         }
-        else
-            throw new Exception("User not found!!! = (");
+        catch (Exception ex)
+        {
 
+            throw new Exception(ex.Message);
+        }
+        finally
+        {
+            _conexion.Desconectar();
+            _conexion = null;
+        }
     }
     [WebMethod(EnableSession = true)]
     public bool Vacio()
