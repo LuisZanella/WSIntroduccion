@@ -32,19 +32,20 @@ public class WSLogin : System.Web.Services.WebService
     {
         SqlConexion _conexion = new SqlConexion();
         List<SqlParameter> _Parametros = new List<SqlParameter>();
-        DataTable _dtr = null;
+        DataTableReader _dtr = null;
         try
         {
             //Abrir conexion
             _conexion.Conectar(System.Configuration.ConfigurationManager.ConnectionStrings["MiBD"].ToString());
             // Se agregan parámetros a la lista List <SqlParameter>, con los valores para cada parametro que se obtienen de los atributos
             // del objeto Pej.Objeto . Atributo_x
-            _Parametros.Add(new SqlParameter("@Nick", user.Nick));
-            _Parametros.Add(new SqlParameter("@Password", user.Password));
+            _Parametros.Add(new SqlParameter("@_Nick", user.Nick));
+            _Parametros.Add(new SqlParameter("@_Password", user.Password));
             _conexion.PrepararProcedimiento("sp_LoginUser", _Parametros);
             _dtr = _conexion.EjecutarTableReader();
             if (_dtr.HasRows)
             {
+                _dtr.Read();
                 User _user = new global::User()
                 {
                     Id = long.Parse(_dtr["Id_User"].ToString()),

@@ -68,7 +68,7 @@ public class SqlConexion
             throw new Exception("No hay conexion con la bd");
         }
     }
-    public DataTable EjecutarTableReader() {
+    public DataTableReader EjecutarTableReader() {
         
             DataTable dt = new DataTable();
             SqlDataAdapter adt = new SqlDataAdapter();
@@ -77,15 +77,15 @@ public class SqlConexion
         {
             if (_Preparado)
             {
-                //cmm.CommandTimeout = 120; // Segundos de espera para ejecutar una Consulta en SQL(60 segundos)
+                 // Segundos de espera para ejecutar una Consulta en SQL(60 segundos)
                 cmd.Parameters.AddRange(_Parametros.ToArray());
+                cmd.CommandTimeout = 120;
                 cmd.CommandType = CommandType.StoredProcedure;
-                /*adt.SelectCommand = cmd;
-                adt.Fill(dt);*/
-                dt.Load(cmd.ExecuteReader());
+                adt.SelectCommand = cmd;
+                adt.Fill(dt);
                 _Preparado = false;
-
-                return dt;
+                dt.TableName = "Usuario";
+                return dt.CreateDataReader();
             }
             else
             {
@@ -98,9 +98,7 @@ public class SqlConexion
             string MensajeError = "Error: " + x.Message + ".";
             throw new Exception(MensajeError, x);
         }
-        finally {
-            cmd.Dispose();
-        }
+
     }
     public int EjecutarProcedimiento() {
         if (_Preparado)
